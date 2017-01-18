@@ -7,7 +7,6 @@
 //
 
 #import <TwilioIPMessagingClient/TWMMembers.h>
-#import <TwilioIPMessagingClient/TWMMembers.h>
 #import "RCTBridgeModule.h"
 
 @interface RCTTwilioIPMessagingMembers : NSObject <RCTBridgeModule>
