@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONObject;
+import android.util.Log;
 
 
 public class RCTTwilioChatClient extends ReactContextBaseJavaModule implements ChatClientListener {
@@ -83,9 +84,24 @@ public class RCTTwilioChatClient extends ReactContextBaseJavaModule implements C
         connectionState.put("Connected", ChatClient.ConnectionState.CONNECTED.toString());
         connectionState.put("Disconnected", ChatClient.ConnectionState.DISCONNECTED.toString());
         connectionState.put("Denied", ChatClient.ConnectionState.DENIED.toString());
-        connectionState.put("Fatal_Error", ChatClient.ConnectionState.FATAL_ERROR.toString());
+        connectionState.put("Error", ChatClient.ConnectionState.FATAL_ERROR.toString());
         constants.put("TCHClientConnectionState", connectionState);
-        
+
+        Map<String, Integer> logLevel = new HashMap<>();
+        logLevel.put("Fatal", Log.ERROR);
+        logLevel.put("Critical", Log.ERROR);
+        logLevel.put("Warning", Log.WARN);
+        logLevel.put("Info", Log.INFO);
+        logLevel.put("Debug", Log.DEBUG);
+        constants.put("TCHLogLevel", logLevel);
+
+        Map<String, String> userInfo = new HashMap<>();
+        userInfo.put("Attributes", UserInfo.UpdateReason.ATTRIBUTES.toString());
+        userInfo.put("FriendlyName", UserInfo.UpdateReason.FRIENDLY_NAME.toString());
+        userInfo.put("ReachabilityNotifiable", UserInfo.UpdateReason.REACHABILITY_NOTIFIABLE.toString());
+        userInfo.put("ReachabilityOnline", UserInfo.UpdateReason.REACHABILITY_ONLINE.toString());
+        constants.put("TCHUserInfoUpdate", userInfo);
+
         return constants;
     }
 
@@ -221,6 +237,11 @@ public class RCTTwilioChatClient extends ReactContextBaseJavaModule implements C
         tmp.client.shutdown();
     }
 
+    @ReactMethod
+    public void setLogLevel(Integer logLevel) {
+        ChatClient.setLogLevel(logLevel);
+    }
+
     // UserInfo methods
 
     @ReactMethod
@@ -272,7 +293,7 @@ public class RCTTwilioChatClient extends ReactContextBaseJavaModule implements C
     }
 
     @Override
-    public void onChannelAdd(Channel channel) {
+    public void onChannelAdd(final Channel channel) {
         sendEvent("chatClient:channelAdded", RCTConvert.Channel(channel));
     }
 
